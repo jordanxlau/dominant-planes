@@ -1,10 +1,22 @@
 import static java.lang.Math.*;
 
+/** represents a 3D plane
+ * @author Jordan Lau 340600240 */
 public class Plane3D {
 
-	protected double a, b, c, d;
+	/** x coefficient of the plane equation in cartesian form */
+	protected double a;
+	/** y coefficient of the plane equation in cartesian form */
+	protected double b;
+	/** z coefficient of the plane equation in cartesian form */
+	protected double c;
+	/** scalar of the plane equation in cartesian form */
+	protected double d;
 
-	//Constructor from 3 points
+	/** Constructor from 3 points
+	 * @param p1
+	 * @param p2
+	 * @param p3 */
 	public Plane3D(Point3D p1, Point3D p2, Point3D p3){
 		//normal vector = cross product of direction vectors v1 and v2
 		Point3D v1 = new Point3D(p1.getX()-p2.getX(), p1.getY()-p2.getY(), p1.getZ()-p2.getZ());
@@ -15,7 +27,11 @@ public class Plane3D {
 		d = -1*a*p1.getX() -1*b*p1.getY() -1*c*p1.getZ();
 	}
 	
-	//Constructor from 4 parameters
+	/** Constructor from 4 parameters
+	 * @param a x coefficient
+	 * @param b y coefficient
+	 * @param c z coefficient
+	 * @param d scalar */
 	public Plane3D(double a, double b, double c, double d){
 		this.a = a;
 		this.b = b;
@@ -23,7 +39,8 @@ public class Plane3D {
 		this.d = d;
 	}
 	
-	//getDistance method that returns the distance from a point to the plane
+	/** computes the euclidean distance between a point and the plane
+	 * @param pt the point from which the distance to this Point object */
 	public double getDistance(Point3D pt){
 		double numerator, denominator;
 		numerator = abs(a*pt.getX() + b*pt.getY() + c*pt.getZ() + d);
