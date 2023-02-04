@@ -76,7 +76,7 @@ public class PointCloud implements Iterator{
 	}
 	
 	//A save method that saves the point cloud into a xyz file
-	public void save(String filename){
+	public void save(){
         for (int i = 0; i < cloud.size(); i++){
         	addPoint(cloud.get(i));
         }
