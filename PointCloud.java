@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
-import java.lang.*;
+import static java.lang.Double.*;
+import static java.lang.Math.*;
 
 /** represents a cloud of {@link Point3D}
  * @author Jordan Lau 340600240 */
@@ -11,19 +12,26 @@ public class PointCloud implements Iterable, Iterator{
 	/** list of all the points in the point cloud */
 	protected List <Point3D> cloud;
 	
-	/** @param filename name of .xyz file to read points from */
+	/** Constructor 
+	 * @param filename name of .xyz file to read points from */
 	public PointCloud(String filename){
 		this.filename = filename;
 		cloud = new LinkedList<Point3D>();
 
 		try{
 			BufferedReader br = new BufferedReader(new FileReader(filename));
-			String[] array = br.readLine().split(" "); // read row and process point information
-			cloud.add( new Point3D(Double.valueOf(array[0]), Double.valueOf(array[1]), Double.valueOf(array[2])) );
+			String[] array;
+			br.readLine();
+			String line = br.readLine();
+			do {
+				array = line.split("\t");
+				cloud.add( new Point3D(valueOf(array[0]), valueOf(array[1]), valueOf(array[2])) );
+				line = br.readLine();
+			} while(line != null);
 		} catch (IOException e){}
 	}
 
-	/** */
+	/** Constructor */
 	public PointCloud(){
 		cloud = new LinkedList<Point3D>();
 	}
@@ -48,7 +56,6 @@ public class PointCloud implements Iterable, Iterator{
     public boolean hasNext(){
 	    return current < cloud.size();
     }
-
     //END OF ITERATOR
 
 	/** adds a point to the cloud */
@@ -58,8 +65,10 @@ public class PointCloud implements Iterable, Iterator{
 	
 	/** returns a random point from the cloud */
 	public Point3D getPoint(){
+		if (cloud.size()==0)
+			return new Point3D(0,0,0);
 		int size = cloud.size();
-		int index = (int) Math.floor(Math.random() * size);
+		int index = (int) floor(random() * size);
 		return cloud.get(index);
 	}
 
@@ -74,10 +83,10 @@ public class PointCloud implements Iterable, Iterator{
 		Point3D pt;
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
-			bw.write("x y z\n");
+			bw.write("x\ty\tz\n");
 			for (int i = 0; i < cloud.size(); i++){
 				pt = cloud.get(i);
-				bw.write(pt.getX() + " " + pt.getY() + " " + pt.getZ());
+				bw.write(pt.getX() + "\t" + pt.getY() + "\t" + pt.getZ());
 				bw.write("\n");
 				bw.close();
 			}
