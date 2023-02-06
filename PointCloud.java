@@ -2,94 +2,86 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
+/** represents a cloud of {@link Point3D}
+ * @author Jordan Lau 340600240 */
 public class PointCloud implements Iterable, Iterator{
 
+	/** name of .xyz file to read points from */
 	protected String filename;
+	/** list of all the points in the point cloud */
 	protected List <Point3D> cloud;
 	
-	//A constructor from a xyz file
+	/** @param filename name of .xyz file to read points from */
 	public PointCloud(String filename){
 		this.filename = filename;
 		cloud = new LinkedList<Point3D>();
 
-		Iterator i = this.iterator();
-		while (i.hasNext()){
-			cloud.add((Point3D) i.next());
-		}
+		try{
+			BufferedReader br = new BufferedReader(new FileReader(filename));
+			String[] array = br.readLine().split(" "); // read row and process point information
+			cloud.add( new Point3D(Double.valueOf(array[0]), Double.valueOf(array[1]), Double.valueOf(array[2])) );
+		} catch (IOException e){}
 	}
 
-	//An empty constructor that constructs an empty point cloud
+	/** */
 	public PointCloud(){
 		cloud = new LinkedList<Point3D>();
 	}
 
-	// ITERATOR
-	// Iterator Instance variables
-    protected Point3D current;
-    protected int currentLine;
-    protected BufferedReader br;
+	//ITERATOR
+    /** current index of list of points being read by {@link Iterator} */
+    protected int current;
 
-    //An iterator method that returns an iterator to the points in the cloud
+    /** An {@link Iterator} method that returns an iterator to the points in the cloud */
     public Iterator iterator() {
-        current = null;
-        currentLine = 1;
-        try{
-			br = new BufferedReader(new FileReader(filename));
-		} catch (IOException e){}
+        current = 0;
         return this;
     }
 
+    /** returns the next {@link Point3D} in the cloud for the iterator*/
     public Point3D next() {
-		try{
-			String[] array = br.readLine().split(" "); // read row and process point information
-			current = new Point3D(Double.valueOf(array[0]), Double.valueOf(array[1]), Double.valueOf(array[2]));
-		} catch (IOException e){}
-		
-		currentLine++;
-		return current;
+		current++;
+		return cloud.get(current - 1);
     }
 
+    /** determines if the cloud has another point */
     public boolean hasNext(){
-    	try{
-            return br.readLine() != null;
-        } catch (IOException e) {
-        	return false;
-        }
+	    return current < cloud.size();
     }
 
     //END OF ITERATOR
 
-	//A addPoint method that adds a point to the point cloud
+	/** adds a point to the cloud */
 	public void addPoint(Point3D pt){
-        try {
-			BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
-			bw.write(pt.getX() + " " + pt.getY() + " " + pt.getZ());
-			bw.close();
-        } catch (IOException e) {}
+        cloud.add(new Point3D(pt.getX(), pt.getY(), pt.getZ()));
 	}
 	
-	//A getPoint method that returns a random point from the cloud
+	/** returns a random point from the cloud */
 	public Point3D getPoint(){
 		int size = cloud.size();
 		int index = (int) Math.floor(Math.random() * size);
 		return cloud.get(index);
 	}
 
-	//A remove method that removes a specified point from the cloud
+	/** removes a specified point from the cloud */
 	public void remove(Point3D p){
-		Iterator i = this.iterator();
-		for (int index = 0; i.hasNext(); index++){
-			if (i.next().equals(p)){
-				cloud.remove(index);
-			}
-		}
+		cloud.remove(p);
 	}
 	
-	//A save method that saves the point cloud into a xyz file
-	public void save(){
-        for (int i = 0; i < cloud.size(); i++){
-        	addPoint(cloud.get(i));
-        }
-    }
+	/** saves the point cloud into a .xyz file
+	 * @param filename name of new .xyz file to store the points in */
+	public void save(String filename){
+		Point3D pt;
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(filename));
+			bw.write("x y z\n");
+			for (int i = 0; i < cloud.size(); i++){
+				pt = cloud.get(i);
+				bw.write(pt.getX() + " " + pt.getY() + " " + pt.getZ());
+				bw.write("\n");
+				bw.close();
+			}
+		} catch (IOException e) {}
+	}
 
 }

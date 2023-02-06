@@ -26,9 +26,9 @@ public class PlaneRANSAC{
 		return (int) Math.ceil( log( 1 - confidence ) / log( 1 - pow(percentage,3) ) );
 	}
 
-	// run method that runs the RANSAC algorithm for identifying the dominant plane of the point cloud (only one plane)
-	// filename being the xyz file that will contain the points of the dominant plane
-	// this method will also remove the plane points from the point cloud
+	/** run method that runs the RANSAC algorithm for identifying the dominant plane of the point cloud (only one plane)
+	/* filename being the xyz file that will contain the points of the dominant plane
+	/* this method will also remove the plane points from the point cloud */
 	public void run(int numberOfIterations, String filename){
 		int currentSupport;
 		int bestSupport = 0;
@@ -63,7 +63,17 @@ public class PlaneRANSAC{
 		newFile.addPoint(p1);
 		newFile.addPoint(p2);
 		newFile.addPoint(p3);
-		newFile.save();
+		newFile.save(filename + "p");
+	}
+
+	public static void main(String[] args){
+		args = new String[]{"PointCloud1.xyz", "99", "20"};
+		String filename = args[0];
+		int confidence = Integer.parseInt(args[1]);
+		int percentage = Integer.parseInt(args[2]);
+		PointCloud pc = new PointCloud();
+		PlaneRANSAC ransac = new PlaneRANSAC(pc);
+		ransac.run(ransac.getNumberOfIterations(confidence,percentage), filename);
 	}
 
 }
