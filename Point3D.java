@@ -40,6 +40,11 @@ public class Point3D{
 		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 	}
 
+	/** returns true iff the points are at the same coordinates */
+	public boolean equals(Point3D that){
+		return this.x == that.x && this.y == that.y && this.z == that.z;
+	}
+
 	/** computes the euclidean distance between two points
 	 * @param point the point from which the distance to this Point object */
 	public double distance(Point3D point){

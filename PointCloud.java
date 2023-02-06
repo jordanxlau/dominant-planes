@@ -74,6 +74,16 @@ public class PointCloud implements Iterable, Iterator{
 		int index = (int) Math.floor(Math.random() * size);
 		return cloud.get(index);
 	}
+
+	//A remove method that removes a specified point from the cloud
+	public void remove(Point3D p){
+		Iterator i = this.iterator();
+		for (int index = 0; i.hasNext(); index++){
+			if (i.next().equals(p)){
+				cloud.remove(index);
+			}
+		}
+	}
 	
 	//A save method that saves the point cloud into a xyz file
 	public void save(){

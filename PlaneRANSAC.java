@@ -34,7 +34,9 @@ public class PlaneRANSAC{
 		int bestSupport = 0;
 		Plane3D currentPlane;
 		Plane3D dominantPlane;
-		Point3D p1, p2, p3;
+		Point3D p1 = pc.getPoint();
+		Point3D p2 = pc.getPoint();
+		Point3D p3 = pc.getPoint();
 
 		for (int i = 0; i < this.getNumberOfIterations(99, 1); i++){
 			p1 = pc.getPoint();
@@ -43,7 +45,7 @@ public class PlaneRANSAC{
 			currentPlane = new Plane3D(p1, p2, p3);
 			currentSupport = 0;
 			for (Object o : pc){ // iterate all points in the cloud and find current support
-				Point3D point = o;
+				Point3D point = (Point3D) o;
 				if (currentPlane.getDistance(point) < eps)
 					currentSupport++;
 			}
@@ -58,9 +60,9 @@ public class PlaneRANSAC{
 		pc.remove(p1);
 		pc.remove(p2);
 		pc.remove(p3);
-		newFile.add(p1);
-		newFile.add(p2);
-		newFile.add(p3);
+		newFile.addPoint(p1);
+		newFile.addPoint(p2);
+		newFile.addPoint(p3);
 		newFile.save();
 	}
 
