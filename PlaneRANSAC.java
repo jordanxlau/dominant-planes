@@ -1,3 +1,5 @@
+import static java.lang.Math.*;
+
 public class PlaneRANSAC{
 	protected double eps;
 	protected PointCloud pc;
@@ -17,23 +19,11 @@ public class PlaneRANSAC{
 		return eps;
 	}
 	
-	//method that returns the estimated number of iterations required to obtain a certain level of confidence to identify a plane made of a certain percentage of points
-	public int getNumberOfIterations(double confidence, double percentageOfPointsOnPlane){
-		/* how many iterations should we perform if we want to be almost certain (let’s say at 99%) that we have found the dominant plane?
-		First, suppose that the percentage of points that support the dominant plane is p% of the total number of points in the cloud.
-
-		The probability of randomly picking three points that belong to this plane is therefore p^3%
-
-		We can then conclude that the probability of picking a set of random that contains at least one outlier is (1- p^3)%.
-		If we pick k random triplets of points, the probability that these sets always contains an outlier is (1- p3 ) k %.
-
-		Consequently, the probability of finding at least one set made of 3
-		points that belongs to the dominant plane is 1-( 1- p3 ) k %.
-
-		We must therefore find the value of k that give us a confidence probability of, let’s say, C= 99%.
-		k = log( 1 - C ) / log( 1- p^3 )
-
-		To find the three most dominant plane, you then need to repeat the complete procedure 3 times.*/
+	/** method that returns the estimated number of iterations required to obtain a "good enough" plane
+	@param confidence level of confidence that our plane is "good enough"
+	@param percentage the percentage of points making up the plane we wish to identify */
+	public int getNumberOfIterations(double confidence, double percentage){
+		return (int) Math.ceil( log( 1 - confidence ) / log( 1 - pow(percentage,3) ) );
 	}
 
 	// run method that runs the RANSAC algorithm for identifying the dominant plane of the point cloud (only one plane)
@@ -44,15 +34,17 @@ public class PlaneRANSAC{
 		int bestSupport = 0;
 		Plane3D currentPlane;
 		Plane3D dominantPlane;
+		Point3D p1, p2, p3;
 
-		for (int i = 0; i < this.getNumberOfIterations; i++){
-			Point3D p1 = pc.getPoint();
-			Point3D p2 = pc.getPoint();
-			Point3D p3 = pc.getPoint();
+		for (int i = 0; i < this.getNumberOfIterations(99, 1); i++){
+			p1 = pc.getPoint();
+			p2 = pc.getPoint();
+			p3 = pc.getPoint();
 			currentPlane = new Plane3D(p1, p2, p3);
 			currentSupport = 0;
-			for (Point3D p : pc){ // iterate all points in the cloud and find current support
-				if (plane.getDistance(eps) < eps)
+			for (Object o : pc){ // iterate all points in the cloud and find current support
+				Point3D point = o;
+				if (currentPlane.getDistance(point) < eps)
 					currentSupport++;
 			}
 			if (currentSupport >= bestSupport){

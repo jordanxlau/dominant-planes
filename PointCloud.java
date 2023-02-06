@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.*;
 
-public class PointCloud implements Iterator{
+public class PointCloud implements Iterable, Iterator{
 
 	protected String filename;
 	protected List <Point3D> cloud;
