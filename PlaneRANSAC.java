@@ -38,52 +38,52 @@ public class PlaneRANSAC{
 		int currentSupport;
 		int bestSupport = 0;
 		Plane3D currentPlane;
-		Plane3D dominantPlane;
-		Point3D p1 = pc.getPoint();
-		Point3D p2 = pc.getPoint();
-		Point3D p3 = pc.getPoint();
+		Plane3D dominantPlane = new Plane3D(0,0,0,0);
+		Point3D point;
 
 		for (int i = 0; i < numberOfIterations; i++){
-			p1 = pc.getPoint();
-			p2 = pc.getPoint();
-			p3 = pc.getPoint();
-			currentPlane = new Plane3D(p1, p2, p3);
+			System.out.println(i);
+			currentPlane = new Plane3D(pc.getPoint(), pc.getPoint(), pc.getPoint());
 			currentSupport = 0;
+
+			//This is taking too long
 			for (Object o : pc){ // iterate all points in the cloud and find current support
-				Point3D point = (Point3D) o;
+				point = (Point3D) o;
 				if (currentPlane.getDistance(point) < eps)
 					currentSupport++;
-			}
-			if (currentSupport >= bestSupport){
-				dominantPlane = currentPlane;
-				bestSupport = currentSupport;
+				if (currentSupport >= bestSupport){
+					dominantPlane = currentPlane;
+					bestSupport = currentSupport;
+					break;
+				}
 			}
 		}
-		System.out.println("trace");
 		
-		//save the newfound dominant plane
-		PointCloud newFile = new PointCloud(filename);
-		pc.remove(p1);
-		pc.remove(p2);
-		pc.remove(p3);
-		newFile.addPoint(p1);
-		newFile.addPoint(p2);
-		newFile.addPoint(p3);
-		System.out.println(p1 + " " + p2 + ' ' + p3);
+		//remove dominant plane points from the original point cloud and save it
+		PointCloud newFile = new PointCloud();
+		for (Object o : pc){
+			point = (Point3D) o;
+			if (dominantPlane.getDistance(point) < eps){
+				newFile.addPoint(point);
+			}
+			//pc.remove(point);
+		}
+
 		newFile.save(filename);
 	}
 
 	public static void main(String[] args){
-		args = new String[]{"PointCloud1.xyz", "0.3", "0.99", "0.05"};
+		args = new String[]{"PointCloud1.xyz", "0.3", "0.99", "0.05", "1"};
 		String filename = args[0];
 		double eps = valueOf(args[1]);
 		double confidence = valueOf(args[2]);
 		double percentage = valueOf(args[3]);
+		String trialNumber = args[4];
 
 		PointCloud pc = new PointCloud(filename);
 		PlaneRANSAC ransac = new PlaneRANSAC(pc);
-		filename = filename.substring(0, filename.length() - 4) + "p1.xyz";
-		int numberOfIterations = ransac.getNumberOfIterations(confidence, percentage);
+		filename = filename.substring(0, filename.length() - 4) + "_p" + trialNumber + ".xyz";
+		int numberOfIterations = 500;//ransac.getNumberOfIterations(confidence, percentage);
 		ransac.setEps(eps);
 		ransac.run(numberOfIterations, filename);
 	}

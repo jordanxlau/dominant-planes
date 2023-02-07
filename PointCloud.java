@@ -67,8 +67,7 @@ public class PointCloud implements Iterable, Iterator{
 	public Point3D getPoint(){
 		if (cloud.size()==0)
 			return new Point3D(0,0,0);
-		int size = cloud.size();
-		int index = (int) floor(random() * size);
+		int index = (int) floor(random() * cloud.size());
 		return cloud.get(index);
 	}
 
@@ -87,9 +86,9 @@ public class PointCloud implements Iterable, Iterator{
 			for (int i = 0; i < cloud.size(); i++){
 				pt = cloud.get(i);
 				bw.write(pt.getX() + "\t" + pt.getY() + "\t" + pt.getZ());
-				bw.write("\n");
-				bw.close();
+				bw.write("\n");	
 			}
+			bw.close();
 		} catch (IOException e) {}
 	}
 
