@@ -58,7 +58,7 @@ public class PlaneRANSAC{
 				}
 			}
 		}
-		
+
 		//remove dominant plane points from the original point cloud and save it
 		PointCloud newFile = new PointCloud();
 		for (Object o : pc){
@@ -73,7 +73,7 @@ public class PlaneRANSAC{
 	}
 
 	public static void main(String[] args){
-		args = new String[]{"PointCloud1.xyz", "0.3", "0.99", "0.05", "1"};
+		args = new String[]{"PointCloud1.xyz", "0.3", "0.5", "0.05", "1"};
 		String filename = args[0];
 		double eps = valueOf(args[1]);
 		double confidence = valueOf(args[2]);
@@ -82,10 +82,11 @@ public class PlaneRANSAC{
 
 		PointCloud pc = new PointCloud(filename);
 		PlaneRANSAC ransac = new PlaneRANSAC(pc);
-		filename = filename.substring(0, filename.length() - 4) + "_p" + trialNumber + ".xyz";
-		int numberOfIterations = 500;//ransac.getNumberOfIterations(confidence, percentage);
+		pc.save(filename.substring(0, filename.length() - 4) + "_p0.xyz");//save old file
+
+		int numberOfIterations = ransac.getNumberOfIterations(confidence, percentage);
 		ransac.setEps(eps);
-		ransac.run(numberOfIterations, filename);
+		ransac.run(numberOfIterations, filename.substring(0, filename.length() - 4) + "_p" + trialNumber + ".xyz");
 	}
 
 }
