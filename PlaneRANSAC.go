@@ -100,9 +100,10 @@ func tripletOfPointsGenerator(wg *sync.WaitGroup, stop chan bool, inputStream ch
         defer fmt.Println("\nFin de tripletOfPointsGenerator...")
         
         for {
-            input1:= <- inputStream
-            input2:= <- inputStream
-            input3:= <- inputStream
+            //<- inputStream
+            input1:= Point3D{0,0,0}//
+            input2:= Point3D{1,1,1}//<- inputStream
+            input3:= Point3D{2,2,2}//<- inputStream
             fmt.Println(input1)
             fmt.Println(input2)
             fmt.Println(input3)
