@@ -9,7 +9,11 @@
                (string->number s))) L)) sL)))
 
 ;the principal function:
-(define (planeRANSAC filename confidence percentage eps) "RETURN")
+(define (planeRANSAC filename confidence percentage eps)
+  (define k (ransacNumberOfIterations confidence percentage))
+  (define Ps (readXYZ filename))
+  (dominantPlane '(1 1 1 1) Ps k eps)
+)
 
 ;computes a plane equation ax+by+cz=d from 3 points.
 (define (plane P1 P2 P3)
@@ -33,36 +37,52 @@
 	(abs (/ numerator denominator)))
 
 ;Count the support of a plane. Returns support count and plane parameter in a pair
-;ASSUME support SUPPORT IS ORIGINALLY SET TO 0
-(define (support support plane points eps)
-        ;(list-ref points (random (length points)))
-
+;ASSUME support IS ORIGINALLY SET TO 0
+(define (support currentSupport currentPlane points eps)
         (if (null? points)
-            (support plane) ;return
-            (
+            (cons currentSupport currentPlane) ;return
+        ;else
+            (begin
               (let ((p (car points)))
-                (if (< (distance plane p) eps)
-                    (set! support (+ support 1)) ;increment current support
+                (if (< (distance currentPlane p) eps)
+                    (set! currentSupport (+ currentSupport 1)) ;increment current support
                 ;else
-                    (set! support support);does nothing
+                    (void);does nothing
                     )
                 )
-              (support support plane (cdr points) eps) ;recurse to the next point in the cloud and find current support)
+              (support currentSupport currentPlane (cdr points) eps) ;recurse to the next point in the cloud and find current support
             )
         )
 )
 
 ;Repeat the random sampling K times to find the dominant plane (the plane with the best support).
-(define (dominantPlane Ps k eps)
-  (if ()))
+(define (dominantPlane bestPlane Ps k eps)
+  (define thisPlane (plane (list-ref Ps (random (length Ps))) (list-ref Ps (random (length Ps))) (list-ref Ps (random (length Ps))))) ;create a plane of three random points
+
+  (if (> (list-ref (support 0 thisPlane Ps eps) 0) (list-ref (support 0 bestPlane Ps eps) 0))
+      (set! bestPlane thisPlane)
+  ;else
+      (void)
+  )
+
+  (if (<= k 0)
+      bestPlane
+  ;else
+      (dominantPlane bestPlane Ps (- k 1) eps)
+  )
+
+)
 
 ;Computes number of iterations required based on confidence and percentage of points
-(define (ransacNumberOfIterations confidence percentage) "RETURN")
+(define (ransacNumberOfIterations confidence percentage)
+  (ceiling (/ (log (- 1 confidence)) (log (- 1 (expt percentage 3) )) ) )
+)
 
-;main
-(define A '(1 1 4))
-(define B '(3 2 0))
-(define C '(0 -1 1))
-(plane A B C)
-
+;test cases
+(plane '(1 1 4) '(3 2 0) '(0 -1 1))
 (distance '(1 2 0 -1) '(4 3 6))
+
+;run RANSAC
+(planeRANSAC "Point_Cloud_1_No_Road_Reduced.xyz" 0.5 0.05 0.3)
+(planeRANSAC "Point_Cloud_2_No_Road_Reduced.xyz" 0.5 0.05 0.3)
+(planeRANSAC "Point_Cloud_3_No_Road_Reduced.xyz" 0.5 0.05 0.3)
