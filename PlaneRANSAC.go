@@ -80,7 +80,7 @@ func randomPointGenerator(wg *sync.WaitGroup, stop chan bool, cloud []Point3D) c
         for {
             select {
                 case <-stop:
-                    break
+                    return
                 case outputStream <- cloud[rand.Intn(len(cloud))]:
             }
         }
@@ -100,17 +100,16 @@ func tripletOfPointsGenerator(wg *sync.WaitGroup, stop chan bool, inputStream ch
         defer fmt.Println("\nFin de tripletOfPointsGenerator...")
         
         for {
-            //<- inputStream
-            input1:= Point3D{0,0,0}//
-            input2:= Point3D{1,1,1}//<- inputStream
-            input3:= Point3D{2,2,2}//<- inputStream
+            input1:= <- inputStream
+            input2:= <- inputStream
+            input3:= <- inputStream
             fmt.Println(input1)
             fmt.Println(input2)
             fmt.Println(input3)
             select {
                 //we close this portion of the pipeline
                 case <-stop:
-                    break
+                    return
                 //main code of this method
                 case outputStream <- [3]Point3D{input1, input2, input3}:
             }
@@ -133,7 +132,7 @@ func takeN(wg *sync.WaitGroup, stop chan bool, inputStream chan [3]Point3D, n in
             input:=<-inputStream
             select {
                 case <-stop:
-                    break
+                    return
                 case outputStream <- input:
            }
         }
@@ -154,7 +153,7 @@ func planeEstimator(wg *sync.WaitGroup, stop chan bool, inputStream chan [3]Poin
         for input := range inputStream{
             select {
                 case <-stop:
-                    break
+                    return
                 case outputStream <- GetPlane(input):
             }
         }
@@ -175,7 +174,7 @@ func supportingPointFinder(wg *sync.WaitGroup, stop chan bool, inputStream chan 
         for input := range inputStream{
             select {
                 case <-stop:
-                    break
+                    return
                 case outputStream <- GetSupport(input, /*point cloud*/ points, eps):
             }
         }
@@ -195,11 +194,11 @@ func fanIn(wg *sync.WaitGroup, stop chan bool, channels []chan Plane3DwSupport) 
         //defers happen when the function is exited
         defer func() {multiplexGroup.Done()}()
         for i := range ch {
-           select {
-            case <-stop:
-                return
-            case outputStream <- i:
-           }
+            select {
+                case <-stop:
+                    return
+                case outputStream <- i:
+            }
         }
     }
 
@@ -231,10 +230,6 @@ func dominantPlaneIdentifier(wg *sync.WaitGroup, stop chan bool, inputStream cha
         for input := range inputStream{
             if (input.SupportSize > bestSupportedPlane.SupportSize){
                 bestSupportedPlane = input
-            }
-            select {
-                case <-stop:
-                    break
             }
         }
     }()
@@ -283,6 +278,7 @@ func main(){
     
     //save old file
     SaveXYZ(string(filename[0:len(filename) - 4]) + "_p0.xyz", RemovePlane(bestSupportedPlane.thisPlane, pc, eps)) 
+    fmt.Println("TRACE")
     //save the dominant plane
     SaveXYZ(string(filename[0:len(filename) - 4]) + "_p1.xyz", GetSupportingPoints(bestSupportedPlane.thisPlane, pc, eps))
 

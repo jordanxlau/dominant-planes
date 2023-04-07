@@ -38,9 +38,9 @@ func remove(slice []Point3D, s int) []Point3D {
 
 // creates a new slice of points in which all points belonging to the plane have been removed
 func RemovePlane(plane Plane3D, points []Point3D, eps float64) []Point3D{
-    newPoints := points
+    newPoints := make([]Point3D,0)
     for i, point := range(newPoints){
-        for (plane.GetDistance(point) < eps){
+        if (plane.GetDistance(point) < eps){
             newPoints = remove(newPoints, i)
         }
     }
