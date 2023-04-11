@@ -12,7 +12,9 @@
 (define (planeRANSAC filename confidence percentage eps)
   (define k (ransacNumberOfIterations confidence percentage))
   (define Ps (readXYZ filename))
-  (dominantPlane '(1 1 1 1) Ps k eps)
+  (define supp (support 0 (dominantPlane '(1 1 1 1) Ps k eps) Ps eps))
+  (println "(support a-coordinate b-coordinate c-coordinate d-coordinate)")
+  (println supp)
 )
 
 ;computes a plane equation ax+by+cz=d from 3 points.
@@ -37,7 +39,7 @@
 	(abs (/ numerator denominator)))
 
 ;Count the support of a plane. Returns support count and plane parameter in a pair
-;ASSUME supportingpoints IS ORIGINALLY SET TO '()
+;ASSUME supportingpoints IS ORIGINALLY SET TO 0
 (define (support currentSupport currentPlane points eps)
         (if (null? points)
             (cons currentSupport currentPlane) ;return
@@ -72,12 +74,7 @@
   (ceiling (/ (log (- 1 confidence)) (log (- 1 (expt percentage 3) )) ) )
 )
 
-;test cases
-(plane '(1 1 4) '(3 2 0) '(0 -1 1))
-(distance '(1 2 0 -1) '(4 3 6))
-(ransacNumberOfIterations 0.8 0.1)
-
 ;run RANSAC
-(planeRANSAC "Point_Cloud_1_No_Road_Reduced.xyz" 0.8 0.1 0.3)
+;(planeRANSAC "Point_Cloud_1_No_Road_Reduced.xyz" 0.8 0.1 0.3)
 ;(planeRANSAC "Point_Cloud_2_No_Road_Reduced.xyz" 0.8 0.1 0.3)
 ;(planeRANSAC "Point_Cloud_3_No_Road_Reduced.xyz" 0.8 0.1 0.3)

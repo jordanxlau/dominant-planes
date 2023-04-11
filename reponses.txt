@@ -1,0 +1,9 @@
+> (planeRANSAC "Point_Cloud_1_No_Road_Reduced.xyz" 0.8 0.1 0.3)
+"(support a-coordinate b-coordinate c-coordinate d-coordinate)"
+(1723 4.269036950599325 1.7050549802946842 202.02876406649466 28.24318555977405)
+> (planeRANSAC "Point_Cloud_2_No_Road_Reduced.xyz" 0.8 0.1 0.3)
+"(support a-coordinate b-coordinate c-coordinate d-coordinate)"
+(2861 0.9457133328524483 0.038414657689119225 -0.024216454933787396 -2.410140215774813)
+> (planeRANSAC "Point_Cloud_3_No_Road_Reduced.xyz" 0.8 0.1 0.3)
+"(support a-coordinate b-coordinate c-coordinate d-coordinate)"
+(2062 42.135101558448724 -12.580853712716404 -264.5313467251086 293.8915430609997)
